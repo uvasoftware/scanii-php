@@ -1,0 +1,24 @@
+Pure shell (bash) interface to Scanii, a web based virus scanning engine (http://scanii.com) 
+
+Requirements:
+	1. getopt
+	2. curl 
+	3. a shell like bash
+
+Using it:
+	1. Go to scanii.com and sign up for an API key 
+	2. Once armed with your API key and secret, you can run by replacing KEY and SECRET with the proper
+	information 
+	3. You can run the command line driver like this:
+
+	$ php scanii.php -c "KEY:SECRET"  -f ~/tmp/eicar.com
+	using key: KEY and secret: SECRET
+	scanning file: /Users/rafael/tmp/eicar.com
+	file /Users/rafael/tmp/eicar.com is infected, virus: Eicar-Test-Signature
+
+	
+		
+Import things to note:
+	1. This client can also be used as a standalone library in your application
+	2. You can store your credentials in a environment variable called SCANII_CRED 
+	3. The license is MIT/X11 so use it and abuse it :)
