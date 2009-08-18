@@ -1,9 +1,9 @@
-Pure shell (bash) interface to Scanii, a web based virus scanning engine (http://scanii.com) 
+A pure PHP interface to Scanii, a web based virus scanning engine (http://scanii.com) 
 
 Requirements:
 	1. getopt
 	2. curl 
-	3. a shell like bash
+	3. PHP5 (may work with php4)
 
 Using it:
 	1. Go to scanii.com and sign up for an API key 
