@@ -9,7 +9,7 @@ class ScaniiClient
 		$this->secret = $secret;
 
 		# you can always change this later
-		$this->url = "http://scanii.com/a/s/1/";
+		$this->url = "https://scanii.com/api/scan/";
 
 		$this->verbose = $verbose;
 	}
