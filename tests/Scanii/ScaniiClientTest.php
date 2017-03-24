@@ -49,6 +49,26 @@ class ScaniiClientTest extends TestCase
     $this->assertTrue($r->findings[0] == "content.malicious.eicar-test-signature");
   }
 
+  public function test_process_async()
+  {
+
+    $temp = tempnam(sys_get_temp_dir(), "FOO");
+    $fd = fopen($temp, "w");
+    fwrite($fd, $this->EICAR);
+
+    $r = json_decode($this->client->process_async($temp));
+    echo(var_dump($r));
+
+    $this->assertNotEmpty($r->id);
+
+    // fetching the result:
+
+    $r2 = json_decode($this->client->retrieve($r->id));
+    $this->assertTrue($r2->findings[0] == "content.malicious.eicar-test-signature");
+    $this->assertEquals($r->id, $r2->id);
+  }
+
+
   public function test_process_with_metadata()
   {
 
