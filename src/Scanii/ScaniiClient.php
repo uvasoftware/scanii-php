@@ -10,66 +10,69 @@ use GuzzleHttp;
  */
 class ScaniiClient
 {
-  private $version, $verbose;
+  private $verbose, $httpClient;
+
+  // version constant - always update when changes are made:
+  const VERSION = '3.0.0';
 
   /**
    * ScaniiClient constructor.
    * @param $key String API key
    * @param $secret String API secret
    * @param bool $verbose turn on verbose mode on the http client and lib
-   * @param string $base_url optional base url to be used @see ScaniiTarget
+   * @param string $baseUrl optional base url to be used @see ScaniiTarget
    */
-  function __construct($key, $secret, $verbose = false, $base_url = ScaniiTarget::v2_1)
+  function __construct($key, $secret, $verbose = false, $baseUrl = ScaniiTarget::v2_1)
   {
 
     assert(strlen($key) > 0);
     assert(strlen($secret) > 0);
 
     $this->verbose = $verbose;
-    $this->version = 'scanii-php/v2.1';
 
     // small workaround for guzzle base uri handling
-    if (substr($base_url, -1) != '/') {
-      $base_url = $base_url . '/';
+    if (substr($baseUrl, -1) != '/') {
+      $baseUrl = $baseUrl . '/';
     }
 
-    $this->http_client = new GuzzleHttp\Client([
-      'base_uri' => $base_url,
+    $this->httpClient = new GuzzleHttp\Client([
+      'base_uri' => $baseUrl,
       'connect_timeout' => 30,
       'read_timeout' => 30,
       'debug' => $verbose,
       'auth' => [$key, $secret],
       'headers' => [
-        'User-Agent' => $this->version
+        'User-Agent' => 'scanii-php/v' . self::VERSION
       ]
     ]);
+    return $this;
   }
 
 
   /**
-   * Fetches the results of a previously processed file @see <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
+   * Fetches the results of a previously processed file @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $id String processing file id to retrieve results for
-   * @return \Psr\Http\Message\StreamInterface
+   * @return ScaniiResult
    */
-  public function retrieve($id)
+  public function retrieve($id): ScaniiResult
   {
     $this->log('loading result ' . $id);
 
-    $res = $this->http_client->request('GET', 'files/' . $id);
+    $res = $this->httpClient->request('GET', 'files/' . $id);
 
     $this->log('content ' . $res->getBody());
     $this->log('status code ' . $res->getStatusCode());
 
-    return $res->getBody();
+    return new ScaniiResult((string)$res->getBody(), $res->getHeaders());
   }
 
   /**
-   * Submits a file to be processed @see <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
+   * Submits a file to be processed @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
-   * @return \Psr\Http\Message\StreamInterface
+   * @return \Scanii\ScaniiResult
    */
-  public function process($path, $metadata = [])
+  public function process($path, $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
@@ -92,19 +95,19 @@ class ScaniiClient
 
     $this->log('post contents ' . var_dump($post_contents));
 
-    $r = $this->http_client->request('POST', 'files', $post_contents);
+    $r = $this->httpClient->request('POST', 'files', $post_contents);
 
     $this->log("result message " . $r->getBody());
-    return $r->getBody();
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
   }
 
   /**
-   * Submits a file to be processed @see <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
+   * Submits a file to be processed @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
-   * @return \Psr\Http\Message\StreamInterface
+   * @return \Scanii\ScaniiResult
    */
-  public function process_async($path, $metadata = [])
+  public function processAsync($path, $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
@@ -127,22 +130,22 @@ class ScaniiClient
 
     $this->log('post contents ' . var_dump($post_contents));
 
-    $r = $this->http_client->request('POST', 'files/async', $post_contents);
+    $r = $this->httpClient->request('POST', 'files/async', $post_contents);
 
     $this->log("result message " . $r->getBody());
-    return $r->getBody();
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+
   }
 
 
-
   /**
-   * Makes a fetch call to scanii @see <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
+   * Makes a fetch call to scanii @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $location String the url of the content to be fetched and processed
    * @param $callback String the callback url to submit the processing result to
    * @param array $metadata associative array of custom metadata
-   * @return \Psr\Http\Message\StreamInterface
+   * @return \Scanii\ScaniiResult
    */
-  public function fetch($location, $callback, $metadata = [])
+  public function fetch($location, $callback, $metadata = []): ScaniiResult
   {
     $this->log("fetching $location with callback: $callback");
 
@@ -162,19 +165,19 @@ class ScaniiClient
 
     $this->log('post contents ' . var_dump($post_contents));
 
-    $r = $this->http_client->request('POST', 'files/fetch', $post_contents);
+    $r = $this->httpClient->request('POST', 'files/fetch', $post_contents);
 
-    return $r->getBody();
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
 
   }
 
   /**
-   * Pings the scanii service using the credentials provided @see <a href="http://docs.scanii.com/v2.1/resources.html#ping">http://docs.scanii.com/v2.1/resources.html#ping</a>
+   * Pings the scanii service using the credentials provided @link <a href="http://docs.scanii.com/v2.1/resources.html#ping">http://docs.scanii.com/v2.1/resources.html#ping</a>
    * @return bool
    */
   public function ping(): bool
   {
-    $r = $this->http_client->request('GET', 'ping');
+    $r = $this->httpClient->request('GET', 'ping');
     return $r->getStatusCode() == 200;
   }
 
@@ -186,12 +189,62 @@ class ScaniiClient
   }
 
   /**
+   * Creates a new temporary authentication token @link <a href="http://docs.scanii.com/v2.1/resources.html#auth-tokens">http://docs.scanii.com/v2.1/resources.html#auth-tokens</a>
+   * @param int $timeout how long the token should be valid for
+   * @return ScaniiResult @see ScaniiResult
+   */
+  public function createAuthToken($timeout = 300): ScaniiResult
+  {
+    assert($timeout > 0);
+
+    $this->log("creating auth token with timeout $timeout");
+    $post_contents = [
+      'form_params' => [
+        'timeout' => $timeout
+      ]
+    ];
+
+    $this->log('post contents ' . var_dump($post_contents));
+    $r = $this->httpClient->request('POST', 'auth/tokens', $post_contents);
+
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+  }
+
+  /**
+   * Deletes a previously created authentication token
+   * @param $id string id of the token to be deleted
+   */
+  public function deleteAuthToken($id): void
+  {
+    assert(strlen($id) > 0);
+
+    $this->log("deleting auth token $id");
+    $this->httpClient->request('DELETE', "auth/tokens/$id");
+  }
+
+
+  /**
+   * Retrieves a previously created auth token
+   * @param $id string the id of the token to be retrieved
+   * @return ScaniiResult
+   */
+  public function retrieveAuthToken($id): ScaniiResult
+  {
+    assert(strlen($id) > 0);
+
+    $this->log("retrieving auth token $id");
+    $r = $this->httpClient->request('GET', "auth/tokens/$id");
+
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+  }
+
+  /**
    * Returns the client version
    * @return string
    */
   public function getVersion(): String
   {
-    return $this->version;
+    return self::VERSION;
   }
 
   /**
@@ -202,8 +255,6 @@ class ScaniiClient
   {
     return $this->verbose;
   }
-
-
 }
 
 
