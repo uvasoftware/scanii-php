@@ -7,7 +7,7 @@
 ```
 {
    "require": {
-      "uvasoftware/scanii-php": "~2.1"
+      "uvasoftware/scanii-php": "~$LATEST_RELEASE_VERSION"
    }
 }
 ```
@@ -23,7 +23,9 @@
  $fd = fopen($temp, "w");
  fwrite($fd, $this->EICAR);
 
- $r = json_decode($this->client->process($temp));
+ $result = $this->client->process($temp);
+ echo($r->getFindings()[0]);
+ 
 ```
 
 Please note that you will need a valid scanii.com account and API Credentials.
