@@ -140,4 +140,31 @@ class ScaniiClientTest extends TestCase
     $this->assertTrue($client->ping());
   }
 
+  public function testCreteAuthToken() {
+    $client = $this->client();
+    $result = $client->createAuthToken(10);
+    self::assertNotNull($result->getId());
+    self::assertNotNull($result->getExpirationDate());
+    self::assertNotNull($result->getCreationDate());
+  }
+
+  public function testDeleteAuthToken() {
+    $client = $this->client();
+    $result = $client->createAuthToken(10);
+    self::assertNotNull($result->getId());
+    self::assertNotNull($result->getExpirationDate());
+    self::assertNotNull($result->getCreationDate());
+    $client->deleteAuthToken($result->getId());
+  }
+
+  public function testRetrieveAuthToken() {
+    $client = $this->client();
+    $token = $client->createAuthToken(10);
+    self::assertNotNull($token->getId());
+    self::assertNotNull($token->getExpirationDate());
+    self::assertNotNull($token->getCreationDate());
+    $token2 = $client->retrieveAuthToken($token->getId());
+    self::assertEquals($token->getId(), $token2->getId());
+    self::assertEquals($token->getExpirationDate(), $token2->getExpirationDate());
+  }
 }

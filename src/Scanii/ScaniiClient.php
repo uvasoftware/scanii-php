@@ -189,6 +189,56 @@ class ScaniiClient
   }
 
   /**
+   * Creates a new temporary authentication token @link <a href="http://docs.scanii.com/v2.1/resources.html#auth-tokens">http://docs.scanii.com/v2.1/resources.html#auth-tokens</a>
+   * @param int $timeout how long the token should be valid for
+   * @return ScaniiResult @see ScaniiResult
+   */
+  public function createAuthToken($timeout = 300): ScaniiResult
+  {
+    assert($timeout > 0);
+
+    $this->log("creating auth token with timeout $timeout");
+    $post_contents = [
+      'form_params' => [
+        'timeout' => $timeout
+      ]
+    ];
+
+    $this->log('post contents ' . var_dump($post_contents));
+    $r = $this->httpClient->request('POST', 'auth/tokens', $post_contents);
+
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+  }
+
+  /**
+   * Deletes a previously created authentication token
+   * @param $id string id of the token to be deleted
+   */
+  public function deleteAuthToken($id): void
+  {
+    assert(strlen($id) > 0);
+
+    $this->log("deleting auth token $id");
+    $this->httpClient->request('DELETE', "auth/tokens/$id");
+  }
+
+
+  /**
+   * Retrieves a previously created auth token
+   * @param $id string the id of the token to be retrieved
+   * @return ScaniiResult
+   */
+  public function retrieveAuthToken($id): ScaniiResult
+  {
+    assert(strlen($id) > 0);
+
+    $this->log("retrieving auth token $id");
+    $r = $this->httpClient->request('GET', "auth/tokens/$id");
+
+    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+  }
+
+  /**
    * Returns the client version
    * @return string
    */
