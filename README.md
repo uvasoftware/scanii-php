@@ -14,7 +14,7 @@
 
 ### Basic usage:
 
-```
+```php
  // creating the client
  $client = new ScaniiClient($this->key, $this->secret, $verbose = true);
 
