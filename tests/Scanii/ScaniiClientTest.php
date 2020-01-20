@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpUnhandledExceptionInspection */
 
 namespace Scanii;
 
@@ -180,8 +180,18 @@ class ScaniiClientTest extends TestCase
       $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, $baseUl = $r);
       self::assertTrue($client->ping());
     };
-
   }
 
-
+  public function testRetrieveAccountInfo()
+  {
+    $client = $this->client();
+    $account = $client->retrieveAccountInfo();
+    self::assertNotNull($account->getName());
+    self::assertTrue($account->getBalance() > 0);
+    self::assertTrue($account->getStartingBalance() > 0);
+    self::assertNotNull($account->getCreationDate());
+    self::assertNotNull($account->getModificationDate());
+    self::assertNotNull(sizeof($account->getUsers()) > 0);
+    self::assertNotNull(sizeof($account->getKeys()) > 0);
+  }
 }

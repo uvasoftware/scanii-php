@@ -1,6 +1,6 @@
 <?php
 
-namespace Scanii;
+namespace Scanii\Internal;
 
 abstract class HttpHeaders
 {

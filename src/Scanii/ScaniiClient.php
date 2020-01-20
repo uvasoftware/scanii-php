@@ -3,6 +3,8 @@
 namespace Scanii;
 
 use GuzzleHttp;
+use Scanii\Models\ScaniiAccountInfo;
+use Scanii\Models\ScaniiResult;
 
 /**
  * Class ScaniiClient - the https://scanii.com client interface
@@ -71,7 +73,7 @@ class ScaniiClient
    * Submits a file to be processed @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
-   * @return \Scanii\ScaniiResult
+   * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function process($path, $metadata = []): ScaniiResult
@@ -107,7 +109,7 @@ class ScaniiClient
    * Submits a file to be processed @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
-   * @return \Scanii\ScaniiResult
+   * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function processAsync($path, $metadata = []): ScaniiResult
@@ -146,7 +148,7 @@ class ScaniiClient
    * @param $location String the url of the content to be fetched and processed
    * @param $callback String the callback url to submit the processing result to
    * @param array $metadata associative array of custom metadata
-   * @return \Scanii\ScaniiResult
+   * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function fetch($location, $callback, $metadata = []): ScaniiResult
@@ -262,6 +264,17 @@ class ScaniiClient
   public function isVerbose(): bool
   {
     return $this->verbose;
+  }
+
+  /**
+   * Retrieves account information.
+   * @return ScaniiAccountInfo
+   * @throws GuzzleHttp\Exception\GuzzleException
+   */
+  public function retrieveAccountInfo(): ScaniiAccountInfo
+  {
+    $r = $this->httpClient->request('GET', 'account.json');
+    return new ScaniiAccountInfo((string)$r->getBody(), $r->getHeaders());
   }
 }
 
