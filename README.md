@@ -25,7 +25,7 @@
 
  $result = $this->client->process($temp);
  echo($r->getFindings()[0]);
- 
+
 ```
 
 Please note that you will need a valid scanii.com account and API Credentials.
@@ -34,5 +34,5 @@ More advanced usage examples can be found [here](https://github.com/uvasoftware/
 
 General documentation on scanii can be found [here](http://docs.scanii.com)
 
-This library supports PHP 7 and above.
+This library supports PHP 7.3 and above.
 

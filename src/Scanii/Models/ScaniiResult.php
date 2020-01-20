@@ -1,7 +1,8 @@
 <?php
 
-namespace Scanii;
+namespace Scanii\Models;
 
+use Scanii\Internal\HttpHeaders;
 
 class ScaniiResult
 {
@@ -9,6 +10,7 @@ class ScaniiResult
   private $message, $expirationDate, $creationDate, $id;
   private $metadata;
   private $findings = array();
+  protected $json;
 
   /**
    * ScaniiResult constructor.
@@ -68,6 +70,7 @@ class ScaniiResult
     if (array_key_exists(HttpHeaders::X_REQUEST_HEADER, $headers)) {
       $this->requestId = $headers[HttpHeaders::X_REQUEST_HEADER][0];
     }
+    $this->json = $json;
   }
 
 

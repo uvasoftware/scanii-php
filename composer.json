@@ -3,13 +3,14 @@
   "description": "A pure PHP interface to Scanii, a web based virus scanning engine (https://scanii.com)",
   "type": "library",
   "require": {
-    "php": "^7.0",
-    "guzzlehttp/guzzle": "^6.2"
+    "php": "^7.3",
+    "guzzlehttp/guzzle": "^6.2",
+    "ext-json": "*"
   },
   "require-dev": {
     "phpunit/phpunit": "^6.0"
   },
-  "license": "Apache 2.0",
+  "license": "Apache-2.0",
   "autoload": {
     "psr-0": {
       "Scanii\\": "src/"
