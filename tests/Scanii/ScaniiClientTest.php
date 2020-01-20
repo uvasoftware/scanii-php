@@ -3,6 +3,7 @@
 namespace Scanii;
 
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 
 class ScaniiClientTest extends TestCase
@@ -140,7 +141,8 @@ class ScaniiClientTest extends TestCase
     $this->assertTrue($client->ping());
   }
 
-  public function testCreteAuthToken() {
+  public function testCreteAuthToken()
+  {
     $client = $this->client();
     $result = $client->createAuthToken(10);
     self::assertNotNull($result->getId());
@@ -148,7 +150,8 @@ class ScaniiClientTest extends TestCase
     self::assertNotNull($result->getCreationDate());
   }
 
-  public function testDeleteAuthToken() {
+  public function testDeleteAuthToken()
+  {
     $client = $this->client();
     $result = $client->createAuthToken(10);
     self::assertNotNull($result->getId());
@@ -157,7 +160,8 @@ class ScaniiClientTest extends TestCase
     $client->deleteAuthToken($result->getId());
   }
 
-  public function testRetrieveAuthToken() {
+  public function testRetrieveAuthToken()
+  {
     $client = $this->client();
     $token = $client->createAuthToken(10);
     self::assertNotNull($token->getId());
@@ -167,4 +171,17 @@ class ScaniiClientTest extends TestCase
     self::assertEquals($token->getId(), $token2->getId());
     self::assertEquals($token->getExpirationDate(), $token2->getExpirationDate());
   }
+
+  public function testPingAllRegions()
+  {
+    $reflect = new ReflectionClass('Scanii\ScaniiTarget');
+    foreach ($reflect->getConstants() as $r) {
+      echo 'using target ' . $r;
+      $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, $baseUl = $r);
+      self::assertTrue($client->ping());
+    };
+
+  }
+
+
 }

@@ -13,7 +13,7 @@ class ScaniiClient
   private $verbose, $httpClient;
 
   // version constant - always update when changes are made:
-  const VERSION = '3.0.0';
+  const VERSION = '3.1.0';
 
   /**
    * ScaniiClient constructor.
@@ -53,6 +53,7 @@ class ScaniiClient
    * Fetches the results of a previously processed file @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
    * @param $id String processing file id to retrieve results for
    * @return ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function retrieve($id): ScaniiResult
   {
@@ -71,6 +72,7 @@ class ScaniiClient
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
    * @return \Scanii\ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function process($path, $metadata = []): ScaniiResult
   {
@@ -106,6 +108,7 @@ class ScaniiClient
    * @param $path String file path to the file to submit for processing
    * @param array $metadata associative array of custom metadata
    * @return \Scanii\ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function processAsync($path, $metadata = []): ScaniiResult
   {
@@ -144,6 +147,7 @@ class ScaniiClient
    * @param $callback String the callback url to submit the processing result to
    * @param array $metadata associative array of custom metadata
    * @return \Scanii\ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function fetch($location, $callback, $metadata = []): ScaniiResult
   {
@@ -174,6 +178,7 @@ class ScaniiClient
   /**
    * Pings the scanii service using the credentials provided @link <a href="http://docs.scanii.com/v2.1/resources.html#ping">http://docs.scanii.com/v2.1/resources.html#ping</a>
    * @return bool
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function ping(): bool
   {
@@ -192,6 +197,7 @@ class ScaniiClient
    * Creates a new temporary authentication token @link <a href="http://docs.scanii.com/v2.1/resources.html#auth-tokens">http://docs.scanii.com/v2.1/resources.html#auth-tokens</a>
    * @param int $timeout how long the token should be valid for
    * @return ScaniiResult @see ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function createAuthToken($timeout = 300): ScaniiResult
   {
@@ -213,6 +219,7 @@ class ScaniiClient
   /**
    * Deletes a previously created authentication token
    * @param $id string id of the token to be deleted
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function deleteAuthToken($id): void
   {
@@ -227,6 +234,7 @@ class ScaniiClient
    * Retrieves a previously created auth token
    * @param $id string the id of the token to be retrieved
    * @return ScaniiResult
+   * @throws GuzzleHttp\Exception\GuzzleException
    */
   public function retrieveAuthToken($id): ScaniiResult
   {
