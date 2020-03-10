@@ -11,7 +11,8 @@ class ScaniiClientTest extends TestCase
   private $EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
   static private $secret, $key;
 
-  public static function setUpBeforeClass()
+
+  public static function setUpBeforeClass(): void
   {
     self::$key = explode(':', getenv('SCANII_CREDS'))[0];
     self::$secret = explode(':', getenv('SCANII_CREDS'))[1];
@@ -39,7 +40,7 @@ class ScaniiClientTest extends TestCase
     $r2 = $client->retrieve($r->getId());
 
     $this->assertEquals($r2->getId(), $r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
 
   }
 
@@ -60,7 +61,7 @@ class ScaniiClientTest extends TestCase
     $this->assertNotEmpty($r->getCreationDate());
     $this->assertNotEmpty($r->getHostId());
     $this->assertNotEmpty($r->getRequestId());
-    $this->assertTrue($r->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r->getFindings()[0], "eicar") > -1);
   }
 
   public function testProcessAsync()
@@ -79,7 +80,7 @@ class ScaniiClientTest extends TestCase
     // fetching the result:
 
     $r2 = $client->retrieve($r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals($r->getId(), $r2->getId());
   }
 
@@ -124,7 +125,7 @@ class ScaniiClientTest extends TestCase
 
     // fetching the result:
     $r2 = $client->retrieve($r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals("bar", $r2->getMetadata()->foo);
     $this->assertEquals("world", $r2->getMetadata()->hello);
   }
