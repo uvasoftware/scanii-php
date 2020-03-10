@@ -39,7 +39,7 @@ class ScaniiClientTest extends TestCase
     $r2 = $client->retrieve($r->getId());
 
     $this->assertEquals($r2->getId(), $r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
 
   }
 
@@ -79,7 +79,7 @@ class ScaniiClientTest extends TestCase
     // fetching the result:
 
     $r2 = $client->retrieve($r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals($r->getId(), $r2->getId());
   }
 
@@ -124,7 +124,7 @@ class ScaniiClientTest extends TestCase
 
     // fetching the result:
     $r2 = $client->retrieve($r->getId());
-    $this->assertTrue($r2->getFindings()[0] == "content.malicious.eicar-test-signature");
+    $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals("bar", $r2->getMetadata()->foo);
     $this->assertEquals("world", $r2->getMetadata()->hello);
   }
