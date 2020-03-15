@@ -15,7 +15,7 @@ class ScaniiClient
   private $verbose, $httpClient;
 
   // version constant - always update when changes are made:
-  const VERSION = '3.1.0';
+  const VERSION = '3.2.1';
 
   /**
    * ScaniiClient constructor.
