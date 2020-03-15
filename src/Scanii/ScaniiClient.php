@@ -97,7 +97,7 @@ class ScaniiClient
       ]);
     }
 
-    $this->log('post contents ' . var_export($post_contents));
+    $this->log('post contents ' . print_r($post_contents, true));
 
     $r = $this->httpClient->request('POST', 'files', $post_contents);
 
@@ -133,7 +133,7 @@ class ScaniiClient
       ]);
     }
 
-    $this->log('post contents ' . var_export($post_contents));
+    $this->log('post contents ' . print_r($post_contents, true));
 
     $r = $this->httpClient->request('POST', 'files/async', $post_contents);
 
@@ -169,7 +169,7 @@ class ScaniiClient
       $post_contents['form_params']["metadata[$key]"] = $val;
     }
 
-    $this->log('post contents ' . var_export($post_contents));
+    $this->log('post contents ' . print_r($post_contents, true));
 
     $r = $this->httpClient->request('POST', 'files/fetch', $post_contents);
 
@@ -212,7 +212,7 @@ class ScaniiClient
       ]
     ];
 
-    $this->log('post contents ' . var_export($post_contents));
+    $this->log('post contents ' . print_r($post_contents, true));
     $r = $this->httpClient->request('POST', 'auth/tokens', $post_contents);
 
     return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
