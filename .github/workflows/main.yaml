@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Tag release and rev version"
-        shell: /usr/bin/bash -x {0}
+        shell: /usr/bin/bash -ex {0}
         run: |
           # tagging release:
           VERSION=$(cat VERSION)
@@ -21,7 +21,7 @@ jobs:
           # tag repo
           git config --global user.email "ci@uvasoftware.com"
           git config --global user.name "CI"
-          sed -i '' -e "s/VERSION = '.*'/VERSION = '$VERSION'/" src/Scanii/ScaniiClient.php
+          sed -i -e "s/VERSION = '.*'/VERSION = '$VERSION'/" src/Scanii/ScaniiClient.php
           php -l src/Scanii/ScaniiClient.php
           git status
           git commit -a -m "bump to ${VERSION} [ci skip]"
@@ -30,6 +30,6 @@ jobs:
           git push origin v"${VERSION}"
       - name: "Notify composer"
         run: |
-          curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=cleverfoo&apiToken='${API_TOKEN} -d'{"repository":{"url":"uvasoftware/scanii-php"}}'
+          curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=cleverfoo&apiToken='${API_TOKEN} -d'{"repository":{"url":"https://packagist.org/packages/uvasoftware/scanii-php"}}'
         env:
           API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}
