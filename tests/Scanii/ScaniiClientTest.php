@@ -23,7 +23,7 @@ class ScaniiClientTest extends TestCase
 
   private function client(): ScaniiClient
   {
-    return new ScaniiClient(self::$key, self::$secret, $verbose = true);
+    return new ScaniiClient(self::$key, self::$secret, $verbose = false);
   }
 
   public function testRetrieve()
@@ -35,10 +35,23 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->process($temp);
-    var_dump($r);
     $this->assertNotEmpty($r->getId());
 
-    $r2 = $client->retrieve($r->getId());
+    // fetching the result:
+    $counter = 0;
+    while ($counter <= $this->TRY_LIMIT) {
+      echo("polling for result attempt $counter of $this->TRY_LIMIT\n");
+      try {
+        $r2 = $client->retrieve($r->getId());
+        break;
+      } catch (ClientException $ex) {
+        if ($counter > $this->TRY_LIMIT) {
+          throw $ex;
+        }
+      }
+      $counter++;
+      sleep($counter);
+    }
 
     $this->assertEquals($r2->getId(), $r->getId());
     $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
@@ -54,7 +67,6 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->process($temp);
-    var_dump($r);
     $this->assertNotEmpty($r->getId());
     $this->assertNotEmpty($r->getContentLength());
     $this->assertNotEmpty($r->getContentType());
@@ -74,15 +86,15 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->processAsync($temp);
-    var_dump($r);
 
     $this->assertNotEmpty($r->getId());
     // fetching the result:
     $counter = 0;
     while ($counter <= $this->TRY_LIMIT) {
-      echo("polling for result attempt $counter of $this->TRY_LIMIT");
+      echo("polling for result attempt $counter of $this->TRY_LIMIT\n");
       try {
         $r2 = $client->retrieve($r->getId());
+        break;
       } catch (ClientException $ex) {
         if ($counter > $this->TRY_LIMIT) {
           throw $ex;
@@ -131,13 +143,13 @@ class ScaniiClientTest extends TestCase
 
     $this->assertNotEmpty($r->getId());
 
-    var_dump($r);
     // fetching the result:
     $counter = 0;
     while ($counter <= $this->TRY_LIMIT) {
-      echo("polling for result attempt $counter of $this->TRY_LIMIT");
+      echo("polling for result attempt $counter of $this->TRY_LIMIT\n");
       try {
         $r2 = $client->retrieve($r->getId());
+        break;
       } catch (ClientException $ex) {
         if ($counter > $this->TRY_LIMIT) {
           throw $ex;
@@ -198,7 +210,7 @@ class ScaniiClientTest extends TestCase
   {
     $reflect = new ReflectionClass('Scanii\ScaniiTarget');
     foreach ($reflect->getConstants() as $r) {
-      echo 'using target ' . $r;
+      echo("using target $r\n");
       $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, $baseUl = $r);
       self::assertTrue($client->ping());
     };
