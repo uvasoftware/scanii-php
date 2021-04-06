@@ -165,13 +165,13 @@ class ScaniiClientTest extends TestCase
 
   public function testChangeBaseUrl()
   {
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::v2_1_US1);
+    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::EU1);
     $this->assertTrue($client->ping());
 
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::v2_1_AP1);
+    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::AP1);
     $this->assertTrue($client->ping());
 
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::v2_1_EU1);
+    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::US1);
     $this->assertTrue($client->ping());
   }
 
