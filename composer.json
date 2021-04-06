@@ -3,7 +3,7 @@
   "description": "A pure PHP interface to Scanii, a web based virus scanning engine (https://scanii.com)",
   "type": "library",
   "require": {
-    "php": "^7.4",
+    "php": "^7.4 || ^8.0",
     "guzzlehttp/guzzle": "^7.3",
     "ext-json": "*"
   },
