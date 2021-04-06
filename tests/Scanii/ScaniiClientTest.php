@@ -2,13 +2,15 @@
 
 namespace Scanii;
 
+use GuzzleHttp\Exception\ClientException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 
 
 class ScaniiClientTest extends TestCase
 {
-  private $EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+  private string $EICAR = 'X5O!P%@AP[4\\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*';
+  private int $TRY_LIMIT = 3;
   static private $secret, $key;
 
 
@@ -33,10 +35,9 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->process($temp);
-    echo(var_dump($r));
+    var_dump($r);
     $this->assertNotEmpty($r->getId());
 
-    sleep(1);
     $r2 = $client->retrieve($r->getId());
 
     $this->assertEquals($r2->getId(), $r->getId());
@@ -53,7 +54,7 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->process($temp);
-    echo(var_dump($r));
+    var_dump($r);
     $this->assertNotEmpty($r->getId());
     $this->assertNotEmpty($r->getContentLength());
     $this->assertNotEmpty($r->getContentType());
@@ -73,13 +74,23 @@ class ScaniiClientTest extends TestCase
     fwrite($fd, $this->EICAR);
 
     $r = $client->processAsync($temp);
-    echo(var_dump($r));
+    var_dump($r);
 
     $this->assertNotEmpty($r->getId());
-    sleep(1);
     // fetching the result:
-
-    $r2 = $client->retrieve($r->getId());
+    $counter = 0;
+    while ($counter <= $this->TRY_LIMIT) {
+      echo("polling for result attempt $counter of $this->TRY_LIMIT");
+      try {
+        $r2 = $client->retrieve($r->getId());
+      } catch (ClientException $ex) {
+        if ($counter > $this->TRY_LIMIT) {
+          throw $ex;
+        }
+      }
+      $counter++;
+      sleep($counter);
+    }
     $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals($r->getId(), $r2->getId());
   }
@@ -98,7 +109,7 @@ class ScaniiClientTest extends TestCase
       "hello" => "world"
     ]);
 
-    echo(var_dump($r));
+    var_dump($r);
     $this->assertNotEmpty($r->getId());
     $this->assertEquals("bar", $r->getMetadata()->foo);
     $this->assertEquals("world", $r->getMetadata()->hello);
@@ -120,11 +131,21 @@ class ScaniiClientTest extends TestCase
 
     $this->assertNotEmpty($r->getId());
 
-    echo(var_dump($r));
-    sleep(1);
-
+    var_dump($r);
     // fetching the result:
-    $r2 = $client->retrieve($r->getId());
+    $counter = 0;
+    while ($counter <= $this->TRY_LIMIT) {
+      echo("polling for result attempt $counter of $this->TRY_LIMIT");
+      try {
+        $r2 = $client->retrieve($r->getId());
+      } catch (ClientException $ex) {
+        if ($counter > $this->TRY_LIMIT) {
+          throw $ex;
+        }
+      }
+      $counter++;
+      sleep($counter);
+    }
     $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
     $this->assertEquals("bar", $r2->getMetadata()->foo);
     $this->assertEquals("world", $r2->getMetadata()->hello);
@@ -195,4 +216,5 @@ class ScaniiClientTest extends TestCase
     self::assertNotNull(sizeof($account->getUsers()) > 0);
     self::assertNotNull(sizeof($account->getKeys()) > 0);
   }
+
 }
