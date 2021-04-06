@@ -10,6 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: "Tag release and rev version"
+        shell: /usr/bin/bash -x
         run: |
           # tagging release:
           VERSION=$(cat VERSION)
