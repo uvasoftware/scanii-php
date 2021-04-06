@@ -1,0 +1,28 @@
+name: Main
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: "Deploying"
+    steps:
+      - uses: actions/checkout@v2
+      - name: "Tag release and rev version"
+        run: |
+          # tagging release:
+          VERSION=$(cat VERSION)
+
+          echo "################### using version: v$VERSION ###################"
+
+          # tag repo
+          git config --global user.email "ci@uvasoftware.com"
+          git config --global user.name "CI"
+          make tag TAG=${VERSION}
+          git push origin v"${VERSION}"
+      - name: "Notify composer"
+        run: |
+          curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=cleverfoo&apiToken='${API_TOKEN} -d'{"repository":{"url":"uvasoftware/scanii-php"}}'
+        env:
+          API_TOKEN: ${{ secrets.PACKAGIST_API_TOKEN }}

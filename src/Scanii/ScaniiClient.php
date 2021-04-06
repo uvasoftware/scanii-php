@@ -15,8 +15,8 @@ class ScaniiClient
   private GuzzleHttp\Client $httpClient;
   private bool $verbose;
 
-  // version constant - always update when changes are made:
-  const VERSION = '4.0.1';
+  // version constant, updated by the build process:
+  const VERSION = '0.0.0-dev';
 
   /**
    * ScaniiClient constructor.
@@ -253,7 +253,7 @@ class ScaniiClient
    * Returns the client version
    * @return string
    */
-  public function getVersion(): String
+  public function getVersion(): string
   {
     return self::VERSION;
   }
