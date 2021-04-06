@@ -15,15 +15,19 @@ jobs:
           VERSION=$(cat VERSION)
 
           echo "################### using version: v$VERSION ###################"
+          echo $(pwd)
 
           # tag repo
+          cd scanii-php
           git config --global user.email "ci@uvasoftware.com"
           git config --global user.name "CI"
           sed -i '' -e "s/VERSION = '.*'/VERSION = '$VERSION'/" src/Scanii/ScaniiClient.php
           php -l src/Scanii/ScaniiClient.php
+          git status
+          git commit -a -m "bump to ${VERSION} [ci skip]"
+          git push origin main
           git tag -a v"${VERSION}" -m "Release by Github Actions v${VERSION}"
           git push origin v"${VERSION}"
-
       - name: "Notify composer"
         run: |
           curl -XPOST -H'content-type:application/json' 'https://packagist.org/api/update-package?username=cleverfoo&apiToken='${API_TOKEN} -d'{"repository":{"url":"uvasoftware/scanii-php"}}'

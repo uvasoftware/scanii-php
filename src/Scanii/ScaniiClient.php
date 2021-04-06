@@ -23,9 +23,9 @@ class ScaniiClient
    * @param $key String API key
    * @param $secret String API secret
    * @param bool $verbose turn on verbose mode on the http client and lib
-   * @param string $baseUrl optional base url to be used @see ScaniiTarget
+   * @param string $target optional target to be used @see ScaniiTarget, defaults to the nearest target
    */
-  function __construct(string $key, string $secret, $verbose = false, $baseUrl = ScaniiTarget::v2_1)
+  function __construct(string $key, string $secret, $verbose = false, $target = ScaniiTarget::AUTO)
   {
 
     assert(strlen($key) > 0);
@@ -34,12 +34,12 @@ class ScaniiClient
     $this->verbose = $verbose;
 
     // small workaround for guzzle base uri handling
-    if (substr($baseUrl, -1) != '/') {
-      $baseUrl = $baseUrl . '/';
+    if (substr($target, -1) != '/') {
+      $target = $target . '/';
     }
 
     $this->httpClient = new GuzzleHttp\Client([
-      'base_uri' => $baseUrl,
+      'base_uri' => $target,
       'connect_timeout' => 30,
       'read_timeout' => 30,
       'debug' => $verbose,
