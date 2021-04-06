@@ -24,7 +24,6 @@ docs-show:
 tag:
 	$(if $(TAG),,$(error TAG is not defined. Pass via "make tag TAG=4.2.1"))
 	@echo Tagging $(TAG)
-	chag update $(TAG)
 	sed -i '' -e "s/VERSION = '.*'/VERSION = '$(TAG)'/" src/Scanii/ScaniiClient.php
 	php -l src/Scanii/ScaniiClient.php
 	git add -A

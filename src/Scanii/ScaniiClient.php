@@ -12,10 +12,11 @@ use Scanii\Models\ScaniiResult;
  */
 class ScaniiClient
 {
-  private $verbose, $httpClient;
+  private GuzzleHttp\Client $httpClient;
+  private bool $verbose;
 
-  // version constant - always update when changes are made:
-  const VERSION = '3.2.2';
+  // version constant, updated by the build process:
+  const VERSION = '0.0.0-dev';
 
   /**
    * ScaniiClient constructor.
@@ -24,7 +25,7 @@ class ScaniiClient
    * @param bool $verbose turn on verbose mode on the http client and lib
    * @param string $baseUrl optional base url to be used @see ScaniiTarget
    */
-  function __construct($key, $secret, $verbose = false, $baseUrl = ScaniiTarget::v2_1)
+  function __construct(string $key, string $secret, $verbose = false, $baseUrl = ScaniiTarget::v2_1)
   {
 
     assert(strlen($key) > 0);
@@ -57,7 +58,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function retrieve($id): ScaniiResult
+  public function retrieve(string $id): ScaniiResult
   {
     $this->log('loading result ' . $id);
 
@@ -76,7 +77,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function process($path, $metadata = []): ScaniiResult
+  public function process(string $path, $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
@@ -112,7 +113,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function processAsync($path, $metadata = []): ScaniiResult
+  public function processAsync(string $path, $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
@@ -151,7 +152,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function fetch($location, $callback, $metadata = []): ScaniiResult
+  public function fetch(string $location, string $callback, $metadata = []): ScaniiResult
   {
     $this->log("fetching $location with callback: $callback");
 
@@ -223,7 +224,7 @@ class ScaniiClient
    * @param $id string id of the token to be deleted
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function deleteAuthToken($id): void
+  public function deleteAuthToken(string $id): void
   {
     assert(strlen($id) > 0);
 
@@ -238,7 +239,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function retrieveAuthToken($id): ScaniiResult
+  public function retrieveAuthToken(string $id): ScaniiResult
   {
     assert(strlen($id) > 0);
 
@@ -252,7 +253,7 @@ class ScaniiClient
    * Returns the client version
    * @return string
    */
-  public function getVersion(): String
+  public function getVersion(): string
   {
     return self::VERSION;
   }

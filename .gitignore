@@ -42,6 +42,4 @@
 atlassian-ide-plugin.xml
 
 vendor/
-
-# Created by .ignore support plugin (hsz.mobi)
-composer.lock
+composer.phar
