@@ -16,9 +16,8 @@ jobs:
 
           echo "################### using version: v$VERSION ###################"
           echo $(pwd)
-
+          ls -l .
           # tag repo
-          cd scanii-php
           git config --global user.email "ci@uvasoftware.com"
           git config --global user.name "CI"
           sed -i '' -e "s/VERSION = '.*'/VERSION = '$VERSION'/" src/Scanii/ScaniiClient.php
