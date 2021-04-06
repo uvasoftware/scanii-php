@@ -21,12 +21,4 @@ docs:
 docs-show:
 	open docs/_build/html/index.html
 
-tag:
-	$(if $(TAG),,$(error TAG is not defined. Pass via "make tag TAG=4.2.1"))
-	@echo Tagging $(TAG)
-	sed -i '' -e "s/VERSION = '.*'/VERSION = '$(TAG)'/" src/Scanii/ScaniiClient.php
-	php -l src/Scanii/ScaniiClient.php
-	git add -A
-	git commit -m '$(TAG) release'
-
 .PHONY: docs burgomaster coverage-show view-coverage
