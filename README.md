@@ -17,7 +17,7 @@
 ```php
  use Scanii\ScaniiClient;
  // creating the client
- $client = new ScaniiClient($this->key, $this->secret, $verbose = true);
+ $client = ScaniiClient::create($this->key, $this->secret, $verbose = true);
 
  // scans a file
  $temp = tempnam(sys_get_temp_dir(), "FOO");
