@@ -3,6 +3,7 @@
 namespace Scanii;
 
 use GuzzleHttp;
+use InvalidArgumentException;
 use Scanii\Models\ScaniiAccountInfo;
 use Scanii\Models\ScaniiAuthToken;
 use Scanii\Models\ScaniiResult;
@@ -29,6 +30,9 @@ class ScaniiClient
   private function __construct(string $key, ?string $secret, bool $verbose = false, $target = ScaniiTarget::AUTO)
   {
 
+    if (str_contains($key, ":")) {
+      throw new InvalidArgumentException("key cannot contain ':'");
+    }
 
     assert(!str_contains($key, ":"));
 
