@@ -6,11 +6,11 @@ use Scanii\Internal\HttpHeaders;
 
 class ScaniiResult
 {
-  private $rawResponse, $resourceId, $contentType, $contentLength, $resourceLocation, $requestId, $hostId, $checksum;
-  private $message, $expirationDate, $creationDate, $id;
-  private $metadata;
-  private $findings = array();
-  protected $json;
+  private string $rawResponse, $contentType, $contentLength, $resourceLocation, $requestId, $hostId, $checksum;
+  private string $message, $expirationDate, $creationDate, $id;
+  private array $metadata;
+  private array $findings;
+  protected array $json;
 
   /**
    * ScaniiResult constructor.
@@ -19,45 +19,18 @@ class ScaniiResult
    */
   public function __construct($contents, $headers)
   {
-    $json = json_decode($contents);
+    $json = json_decode($contents, true);
 
     $this->rawResponse = $contents;
-
-    if (property_exists($json, 'checksum')) {
-      $this->checksum = $json->checksum;
-    }
-
-    if (property_exists($json, 'content_length')) {
-      $this->contentLength = $json->content_length;
-    }
-
-    if (property_exists($json, 'content_type')) {
-      $this->contentType = $json->content_type;
-    }
-
-    if (property_exists($json, 'creation_date')) {
-      $this->creationDate = $json->creation_date;
-    }
-
-    if (property_exists($json, 'findings')) {
-      $this->findings = $json->findings;
-    }
-
-    if (property_exists($json, 'metadata')) {
-      $this->metadata = $json->metadata;
-    }
-
-    if (property_exists($json, 'expiration_date')) {
-      $this->expirationDate = $json->expiration_date;
-    }
-
-    if (property_exists($json, 'message')) {
-      $this->message = $json->message;
-    }
-
-    if (property_exists($json, 'id')) {
-      $this->id = $json->id;
-    }
+    $this->checksum = $json["checksum"] ?? "";
+    $this->contentLength = $json["content_length"] ?? "";
+    $this->contentType = $json["content_type"] ?? "";
+    $this->creationDate = $json["creation_date"] ?? "";
+    $this->findings = $json["findings"] ?? [];
+    $this->metadata = $json["metadata"] ?? [];
+    $this->expirationDate = $json["expiration_date"] ?? "";
+    $this->message = $json["message"] ?? "";
+    $this->id = $json["id"] ?? "";
 
     if (array_key_exists(HttpHeaders::LOCATION, $headers)) {
       $this->resourceLocation = $headers[HttpHeaders::LOCATION][0];
@@ -74,120 +47,67 @@ class ScaniiResult
   }
 
 
-  /**
-   * @return mixed
-   */
-  public function getRawResponse()
+  public function getRawResponse(): string
   {
     return $this->rawResponse;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getResourceId()
-  {
-    return $this->resourceId;
-  }
-
-
-  /**
-   * @return mixed
-   */
-  public function getContentType()
+  public function getContentType(): string
   {
     return $this->contentType;
   }
 
-
-  /**
-   * @return mixed
-   */
-  public function getContentLength()
+  public function getContentLength(): string
   {
     return $this->contentLength;
   }
 
-
-  /**
-   * @return mixed
-   */
   public function getResourceLocation()
   {
     return $this->resourceLocation;
   }
 
-
-  /**
-   * @return mixed
-   */
-  public function getRequestId()
+  public function getRequestId(): string
   {
     return $this->requestId;
   }
 
-
-  /**
-   * @return mixed
-   */
   public function getHostId()
   {
     return $this->hostId;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getChecksum()
+  public function getChecksum(): string
   {
     return $this->checksum;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getMessage()
+  public function getMessage(): string
   {
     return $this->message;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getExpirationDate()
+  public function getExpirationDate(): string
   {
     return $this->expirationDate;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getCreationDate()
+  public function getCreationDate(): string
   {
     return $this->creationDate;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getMetadata()
+  public function getMetadata(): array
   {
     return $this->metadata;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getFindings()
+  public function getFindings(): array
   {
     return $this->findings;
   }
 
-
-  /**
-   * @return mixed
-   */
-  public function getId()
+  public function getId(): string
   {
     return $this->id;
   }

@@ -2,9 +2,12 @@
 
 namespace Scanii;
 
+use AssertionError;
 use GuzzleHttp\Exception\ClientException;
+use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
+use TypeError;
 
 
 class ScaniiClientTest extends TestCase
@@ -23,7 +26,7 @@ class ScaniiClientTest extends TestCase
 
   private function client(): ScaniiClient
   {
-    return new ScaniiClient(self::$key, self::$secret, $verbose = false);
+    return ScaniiClient::create(self::$key, self::$secret, $verbose = true);
   }
 
   public function testRetrieve()
@@ -116,15 +119,17 @@ class ScaniiClientTest extends TestCase
     $fd = fopen($temp, "w");
     fwrite($fd, $this->EICAR);
 
-    $r = $client->process($temp, [
-      "foo" => "bar",
-      "hello" => "world"
-    ]);
+    $metadata = [
+      "first" => "hello",
+      "second" => "world"
+    ];
+
+    $r = $client->process($temp, $metadata);
 
     var_dump($r);
     $this->assertNotEmpty($r->getId());
-    $this->assertEquals("bar", $r->getMetadata()->foo);
-    $this->assertEquals("world", $r->getMetadata()->hello);
+    $this->assertEquals("hello", $r->getMetadata()["first"]);
+    $this->assertEquals("world", $r->getMetadata()["second"]);
   }
 
   public function testFetch()
@@ -159,19 +164,19 @@ class ScaniiClientTest extends TestCase
       sleep($counter);
     }
     $this->assertTrue(strpos($r2->getFindings()[0], "eicar") > -1);
-    $this->assertEquals("bar", $r2->getMetadata()->foo);
-    $this->assertEquals("world", $r2->getMetadata()->hello);
+    $this->assertEquals("bar", $r2->getMetadata()['foo']);
+    $this->assertEquals("world", $r2->getMetadata()['hello']);
   }
 
   public function testChangeBaseUrl()
   {
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::EU1);
+    $client = ScaniiClient::create(self::$key, self::$secret, $verbose = true, ScaniiTarget::EU1);
     $this->assertTrue($client->ping());
 
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::AP1);
+    $client = ScaniiClient::create(self::$key, self::$secret, $verbose = true, ScaniiTarget::AP1);
     $this->assertTrue($client->ping());
 
-    $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, ScaniiTarget::US1);
+    $client = ScaniiClient::create(self::$key, self::$secret, $verbose = true, ScaniiTarget::US1);
     $this->assertTrue($client->ping());
   }
 
@@ -206,12 +211,27 @@ class ScaniiClientTest extends TestCase
     self::assertEquals($token->getExpirationDate(), $token2->getExpirationDate());
   }
 
+  public function testUseAuthToken()
+  {
+    $client = $this->client();
+    $token = $client->createAuthToken(10);
+    self::assertNotNull($token->getId());
+    $client2 = ScaniiClient::createFromToken($token);
+
+    $token2 = $client->retrieveAuthToken($token->getId());
+    $temp = tempnam(sys_get_temp_dir(), "FOO");
+    $fd = fopen($temp, "w");
+    fwrite($fd, $this->EICAR);
+    $r = $client2->process($temp);
+    $this->assertTrue(strpos($r->getFindings()[0], "eicar") > -1);
+  }
+
   public function testPingAllRegions()
   {
     $reflect = new ReflectionClass('Scanii\ScaniiTarget');
     foreach ($reflect->getConstants() as $r) {
       echo("using target $r\n");
-      $client = new ScaniiClient(self::$key, self::$secret, $verbose = true, $baseUl = $r);
+      $client = ScaniiClient::create(self::$key, self::$secret, $verbose = true, $baseUl = $r);
       self::assertTrue($client->ping());
     };
   }
@@ -227,6 +247,27 @@ class ScaniiClientTest extends TestCase
     self::assertNotNull($account->getModificationDate());
     self::assertNotNull(sizeof($account->getUsers()) > 0);
     self::assertNotNull(sizeof($account->getKeys()) > 0);
+  }
+
+  public function testValidateCredentials1()
+  {
+    $this->expectException(TypeError::class);
+    ScaniiClient::create(null, null);
+
+  }
+
+  public function testValidateCredentials2()
+  {
+    $this->expectException(TypeError::class);
+    ScaniiClient::create("foo", null);
+
+  }
+
+  public function testValidateCredentials3()
+  {
+    $this->expectException(InvalidArgumentException::class);
+    ScaniiClient::create("foo:", "secret");
+
   }
 
 }

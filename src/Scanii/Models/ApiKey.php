@@ -4,9 +4,9 @@ namespace Scanii\Models;
 
 class ApiKey
 {
-  private $active, $creationDate, $lastSeenDate;
-  private $detectionCategoriesEnabled = array();
-  private $tags = array();
+  private string $active, $creationDate, $lastSeenDate;
+  private array $detectionCategoriesEnabled = array();
+  private array $tags = array();
 
   /**
    * ApiKey constructor.
@@ -25,41 +25,26 @@ class ApiKey
     $this->tags = $tags;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getActive()
+  public function getActive(): string
   {
     return $this->active;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getCreationDate()
+  public function getCreationDate(): string
   {
     return $this->creationDate;
   }
 
-  /**
-   * @return mixed
-   */
-  public function getLastSeenDate()
+  public function getLastSeenDate(): string
   {
     return $this->lastSeenDate;
   }
 
-  /**
-   * @return array
-   */
   public function getDetectionCategoriesEnabled(): array
   {
     return $this->detectionCategoriesEnabled;
   }
 
-  /**
-   * @return array
-   */
   public function getTags(): array
   {
     return $this->tags;

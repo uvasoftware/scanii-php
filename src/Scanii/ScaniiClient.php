@@ -3,7 +3,9 @@
 namespace Scanii;
 
 use GuzzleHttp;
+use InvalidArgumentException;
 use Scanii\Models\ScaniiAccountInfo;
+use Scanii\Models\ScaniiAuthToken;
 use Scanii\Models\ScaniiResult;
 
 /**
@@ -16,25 +18,28 @@ class ScaniiClient
   private bool $verbose;
 
   // version constant, updated by the build process:
-  const VERSION = '4.0.2';
+  private const VERSION = '5.0.0';
 
   /**
-   * ScaniiClient constructor.
+   * ScaniiClient private constructor. Please use one of the helper static factory methods instead.
    * @param $key String API key
    * @param $secret String API secret
    * @param bool $verbose turn on verbose mode on the http client and lib
    * @param string $target optional target to be used @see ScaniiTarget, defaults to the nearest target
    */
-  function __construct(string $key, string $secret, $verbose = false, $target = ScaniiTarget::AUTO)
+  private function __construct(string $key, ?string $secret, bool $verbose = false, $target = ScaniiTarget::AUTO)
   {
 
-    assert(strlen($key) > 0);
-    assert(strlen($secret) > 0);
+    if (str_contains($key, ":")) {
+      throw new InvalidArgumentException("key cannot contain ':'");
+    }
+
+    assert(!str_contains($key, ":"));
 
     $this->verbose = $verbose;
 
     // small workaround for guzzle base uri handling
-    if (substr($target, -1) != '/') {
+    if (!str_ends_with($target, '/')) {
       $target = $target . '/';
     }
 
@@ -51,6 +56,18 @@ class ScaniiClient
     return $this;
   }
 
+  public static function createFromToken(ScaniiAuthToken $token, bool $verbose = false, $target = ScaniiTarget::AUTO): ScaniiClient
+  {
+    return new ScaniiClient($token->getResourceId(), null, $verbose, $target);
+  }
+
+  public static function create(string $key, string $secret, bool $verbose = false, $target = ScaniiTarget::AUTO)
+  {
+    assert(strlen($key) > 0);
+    assert(strlen($secret) > 0);
+    return new ScaniiClient($key, $secret, $verbose, $target);
+
+  }
 
   /**
    * Fetches the results of a previously processed file @link <a href="http://docs.scanii.com/v2.1/resources.html#files">http://docs.scanii.com/v2.1/resources.html#files</a>
@@ -77,30 +94,20 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function process(string $path, $metadata = []): ScaniiResult
+  public function process(string $path, array $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
 
-    $post_contents = [
-      'multipart' => [
-        [
-          'name' => 'file',
-          'contents' => fopen($path, 'r')
-        ],
-      ]
+    $parts = [
+      ['name' => 'file', 'contents' => fopen($path, 'r')]
     ];
 
-    foreach ($metadata as $key => $val) {
-      array_push($post_contents['multipart'], [
-        'name' => "metadata[$key]",
-        'contents' => $val
-      ]);
-    }
+    $parts = $this->populateMultipartMetadata($metadata, $parts);
 
-    $this->log('post contents ' . print_r($post_contents, true));
+    $this->log('post contents ' . print_r($parts, true));
 
-    $r = $this->httpClient->request('POST', 'files', $post_contents);
+    $r = $this->httpClient->request('POST', 'files', ["multipart" => $parts]);
 
     $this->log("result message " . $r->getBody());
     return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
@@ -113,30 +120,21 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function processAsync(string $path, $metadata = []): ScaniiResult
+  public function processAsync(string $path, array $metadata = []): ScaniiResult
   {
 
     $this->log('processing ' . $path);
 
-    $post_contents = [
-      'multipart' => [
-        [
-          'name' => 'file',
-          'contents' => fopen($path, 'r')
-        ],
-      ]
+    $parts = [
+      ['name' => 'file', 'contents' => fopen($path, 'r')]
     ];
 
-    foreach ($metadata as $key => $val) {
-      array_push($post_contents['multipart'], [
-        'name' => "metadata[$key]",
-        'contents' => $val
-      ]);
-    }
+    $parts = $this->populateMultipartMetadata($metadata, $parts);
 
-    $this->log('post contents ' . print_r($post_contents, true));
+    $this->log('post contents ' . print_r($parts, true));
 
-    $r = $this->httpClient->request('POST', 'files/async', $post_contents);
+
+    $r = $this->httpClient->request('POST', 'files/async', ["multipart" => $parts]);
 
     $this->log("result message " . $r->getBody());
     return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
@@ -152,7 +150,7 @@ class ScaniiClient
    * @return ScaniiResult
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function fetch(string $location, string $callback, $metadata = []): ScaniiResult
+  public function fetch(string $location, string $callback, array $metadata = []): ScaniiResult
   {
     $this->log("fetching $location with callback: $callback");
 
@@ -199,10 +197,10 @@ class ScaniiClient
   /**
    * Creates a new temporary authentication token @link <a href="http://docs.scanii.com/v2.1/resources.html#auth-tokens">http://docs.scanii.com/v2.1/resources.html#auth-tokens</a>
    * @param int $timeout how long the token should be valid for
-   * @return ScaniiResult @see ScaniiResult
+   * @return ScaniiAuthToken @see ScaniiAuthToken
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function createAuthToken($timeout = 300): ScaniiResult
+  public function createAuthToken(int $timeout = 300): ScaniiAuthToken
   {
     assert($timeout > 0);
 
@@ -216,7 +214,7 @@ class ScaniiClient
     $this->log('post contents ' . print_r($post_contents, true));
     $r = $this->httpClient->request('POST', 'auth/tokens', $post_contents);
 
-    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+    return new ScaniiAuthToken((string)$r->getBody(), $r->getHeaders());
   }
 
   /**
@@ -236,17 +234,17 @@ class ScaniiClient
   /**
    * Retrieves a previously created auth token
    * @param $id string the id of the token to be retrieved
-   * @return ScaniiResult
+   * @return ScaniiAuthToken
    * @throws GuzzleHttp\Exception\GuzzleException
    */
-  public function retrieveAuthToken(string $id): ScaniiResult
+  public function retrieveAuthToken(string $id): ScaniiAuthToken
   {
     assert(strlen($id) > 0);
 
     $this->log("retrieving auth token $id");
     $r = $this->httpClient->request('GET', "auth/tokens/$id");
 
-    return new ScaniiResult((string)$r->getBody(), $r->getHeaders());
+    return new ScaniiAuthToken((string)$r->getBody(), $r->getHeaders());
   }
 
   /**
@@ -276,6 +274,14 @@ class ScaniiClient
   {
     $r = $this->httpClient->request('GET', 'account.json');
     return new ScaniiAccountInfo((string)$r->getBody(), $r->getHeaders());
+  }
+
+  private function populateMultipartMetadata(array $metadata, array $parts): array
+  {
+    foreach ($metadata as $key => $val) {
+      $parts[] = ['name' => "metadata[$key]", 'contents' => $val, 'headers' => ['Content-Type' => 'text/plain']];
+    }
+    return $parts;
   }
 }
 

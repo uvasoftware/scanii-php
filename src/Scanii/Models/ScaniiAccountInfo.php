@@ -5,9 +5,10 @@ namespace Scanii\Models;
 
 class ScaniiAccountInfo extends ScaniiResult
 {
-  private $name, $balance, $startingBalance, $billingEmail, $subscription, $creationDate, $modificationDate;
-  private $users = array();
-  private $keys = array();
+  private string $name, $billingEmail, $subscription, $creationDate, $modificationDate;
+  private array $users = array();
+  private array $keys = array();
+  private int $balance, $startingBalance;
 
   /**
    * ScaniiAccountInfo constructor.
@@ -19,190 +20,70 @@ class ScaniiAccountInfo extends ScaniiResult
     parent::__construct($contents, $headers);
 
     $json = $this->json;
+    $this->name = $json["name"];
+    $this->balance = $json["balance"];
+    $this->startingBalance = $json["starting_balance"];
+    $this->billingEmail = $json["billing_email"];
+    $this->subscription = $json["subscription"] ?? "";
+    $this->creationDate = $json["creation_date"];
+    $this->modificationDate = $json["modification_date"] ?? "";
 
-    if (property_exists($json, 'name')) {
-      $this->name = $json->name;
-    }
-
-    if (property_exists($json, 'balance')) {
-      $this->balance = $json->balance;
-    }
-
-    if (property_exists($json, 'starting_balance')) {
-      $this->startingBalance = $json->starting_balance;
-    }
-
-    if (property_exists($json, 'billing_email')) {
-      $this->billingEmail = $json->billing_email;
-    }
-
-    if (property_exists($json, 'subscription')) {
-      $this->subscription = $json->subscription;
-    }
-
-    if (property_exists($json, 'creation_date')) {
-      $this->creationDate = $json->creation_date;
-    }
-
-    if (property_exists($json, 'modification_date')) {
-      $this->modificationDate = $json->modification_date;
-    }
-
-    if (property_exists($json, 'users')) {
-      foreach ($json->users as $k => $v) {
-        $this->users[$k] = new User($v->creation_date, $v->last_login_date);
+    if (array_key_exists('users', $json)) {
+      foreach ($json['users'] as $k => $v) {
+        $this->users[$k] = new User($v['creation_date'], $v['last_login_date']);
       }
     }
 
-    if (property_exists($json, 'keys')) {
-      foreach ($json->keys as $k => $v) {
-        $this->keys[$k] = new ApiKey($v->active, $v->creation_date, $v->last_seen_date, $v->detection_categories_enabled, $v->tags);
+    if (array_key_exists('keys', $json)) {
+      foreach ($json['keys'] as $k => $v) {
+        $this->keys[$k] = new ApiKey($v['active'], $v['creation_date'], $v['last_seen_date'] ?? "", $v['detection_categories_enabled'], $v['tags']);
       }
     }
 
   }
 
-  /**
-   * @return mixed
-   */
-  public function getName()
+  public function getName(): string
   {
     return $this->name;
   }
 
-  /**
-   * @param mixed $name
-   */
-  public function setName($name): void
-  {
-    $this->name = $name;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getBalance()
-  {
-    return $this->balance;
-  }
-
-  /**
-   * @param mixed $balance
-   */
-  public function setBalance($balance): void
-  {
-    $this->balance = $balance;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getStartingBalance()
-  {
-    return $this->startingBalance;
-  }
-
-  /**
-   * @param mixed $startingBalance
-   */
-  public function setStartingBalance($startingBalance): void
-  {
-    $this->startingBalance = $startingBalance;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getBillingEmail()
+  public function getBillingEmail(): string
   {
     return $this->billingEmail;
   }
 
-  /**
-   * @param mixed $billingEmail
-   */
-  public function setBillingEmail($billingEmail): void
-  {
-    $this->billingEmail = $billingEmail;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getSubscription()
+  public function getSubscription(): string
   {
     return $this->subscription;
   }
 
-  /**
-   * @param mixed $subscription
-   */
-  public function setSubscription($subscription): void
-  {
-    $this->subscription = $subscription;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getCreationDate()
+  public function getCreationDate(): string
   {
     return $this->creationDate;
   }
 
-  /**
-   * @param mixed $creationDate
-   */
-  public function setCreationDate($creationDate): void
-  {
-    $this->creationDate = $creationDate;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getModificationDate()
+  public function getModificationDate(): string
   {
     return $this->modificationDate;
   }
 
-  /**
-   * @param mixed $modificationDate
-   */
-  public function setModificationDate($modificationDate): void
-  {
-    $this->modificationDate = $modificationDate;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getUsers()
+  public function getUsers(): array
   {
     return $this->users;
   }
 
-  /**
-   * @param mixed $users
-   */
-  public function setUsers($users): void
-  {
-    $this->users = $users;
-  }
-
-  /**
-   * @return mixed
-   */
-  public function getKeys()
+  public function getKeys(): array
   {
     return $this->keys;
   }
 
-  /**
-   * @param mixed $keys
-   */
-  public function setKeys($keys): void
+  public function getBalance(): int
   {
-    $this->keys = $keys;
+    return $this->balance;
+  }
+
+  public function getStartingBalance(): int
+  {
+    return $this->startingBalance;
   }
 }
