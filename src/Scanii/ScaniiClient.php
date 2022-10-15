@@ -17,8 +17,8 @@ class ScaniiClient
   private GuzzleHttp\Client $httpClient;
   private bool $verbose;
 
-  // version constant, updated by the build process:
-  private const VERSION = '5.0.0';
+  // version constant, updated by the build process, do not change:
+  private const VERSION = 'dev';
 
   /**
    * ScaniiClient private constructor. Please use one of the helper static factory methods instead.
