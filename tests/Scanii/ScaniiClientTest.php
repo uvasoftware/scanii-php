@@ -4,7 +4,6 @@ namespace Scanii;
 
 use AssertionError;
 use GuzzleHttp\Exception\ClientException;
-use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionClass;
 use TypeError;
@@ -255,12 +254,14 @@ class ScaniiClientTest extends TestCase
     ScaniiClient::create(null, null);
 
   }
+
   public function testValidateCredentials2()
   {
     $this->expectException(TypeError::class);
     ScaniiClient::create("foo", null);
 
   }
+
   public function testValidateCredentials3()
   {
     $this->expectException(AssertionError::class);
