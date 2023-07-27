@@ -22,3 +22,6 @@ docs-show:
 	open docs/_build/html/index.html
 
 .PHONY: docs burgomaster coverage-show view-coverage
+
+update-deps:
+	php composer.phar update

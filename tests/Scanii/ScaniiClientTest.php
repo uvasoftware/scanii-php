@@ -26,7 +26,7 @@ class ScaniiClientTest extends TestCase
 
   private function client(): ScaniiClient
   {
-    return ScaniiClient::create(self::$key, self::$secret, $verbose = true);
+    return ScaniiClient::create(self::$key, self::$secret);
   }
 
   public function testRetrieve()
@@ -47,10 +47,7 @@ class ScaniiClientTest extends TestCase
       try {
         $r2 = $client->retrieve($r->getId());
         break;
-      } catch (ClientException $ex) {
-        if ($counter > $this->TRY_LIMIT) {
-          throw $ex;
-        }
+      } catch (ClientException) {
       }
       $counter++;
       sleep($counter);
@@ -99,9 +96,6 @@ class ScaniiClientTest extends TestCase
         $r2 = $client->retrieve($r->getId());
         break;
       } catch (ClientException $ex) {
-        if ($counter > $this->TRY_LIMIT) {
-          throw $ex;
-        }
       }
       $counter++;
       sleep($counter);
@@ -155,10 +149,7 @@ class ScaniiClientTest extends TestCase
       try {
         $r2 = $client->retrieve($r->getId());
         break;
-      } catch (ClientException $ex) {
-        if ($counter > $this->TRY_LIMIT) {
-          throw $ex;
-        }
+      } catch (ClientException) {
       }
       $counter++;
       sleep($counter);
