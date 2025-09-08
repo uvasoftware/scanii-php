@@ -3,6 +3,7 @@ updates:
 - package-ecosystem: composer
   directory: "/"
   schedule:
-    interval: daily
+    interval: weekly
+    day: "monday"
     time: "21:35"
   open-pull-requests-limit: 1
