@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     name: "Deploying"
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - name: "Tag release and rev version"
         shell: /usr/bin/bash -ex {0}
         run: |
