@@ -1,5 +1,15 @@
 # Changelog
 
+## [6.3.1] — dependency refresh
+
+### Changed
+
+- Bumped CI actions: `actions/checkout` v4 → v7, `actions/cache` v4 → v6.
+  (Dev dependencies float within `composer.json` ranges — `composer.lock` is intentionally
+  not committed for this library, so phpunit resolves to the latest 11.x at install time;
+  runtime requirements — `php`, `ext-curl`, `ext-json` — are unchanged.)
+- `ScaniiClient::VERSION` constant bumped to `6.3.1`.
+
 ## [6.3.0] — deprecate AUTO endpoint
 
 ### Deprecated
