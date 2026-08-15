@@ -26,7 +26,7 @@ use Scanii\Models\ScaniiTraceResult;
  */
 final class ScaniiClient
 {
-    public const string VERSION = '6.3.0';
+    public const string VERSION = '6.3.1';
 
     private const string API_VERSION_PATH = '/v2.2';
     private const string DEFAULT_USER_AGENT_PREFIX = 'scanii-php/v';
