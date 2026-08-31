@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Dropped the "v2.2 preview" designation from `retrieveTrace` and `processFromUrl`.
+  The trace endpoint is no longer marked preview in the contract, and `processFromUrl`
+  was never preview; the methods themselves are unchanged.
+
 ## [6.4.0] — split result and trace deletion
 
 ### Added

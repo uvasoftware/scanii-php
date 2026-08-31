@@ -56,10 +56,10 @@ fclose($stream);
 | `processStream($stream, $filename, $contentType, $metadata, $callback)` | `POST /files` | `ScaniiProcessingResult` |
 | `processAsync($path, $metadata, $callback)` | `POST /files/async` | `ScaniiPendingResult` |
 | `processAsyncStream($stream, $filename, $contentType, $metadata, $callback)` | `POST /files/async` | `ScaniiPendingResult` |
-| `processFromUrl($location, $callback, $metadata)` | `POST /files` | `ScaniiProcessingResult` (v2.2 preview) |
+| `processFromUrl($location, $callback, $metadata)` | `POST /files` | `ScaniiProcessingResult` |
 | `fetch($location, $metadata, $callback)` | `POST /files/fetch` | `ScaniiPendingResult` |
 | `retrieve($id)` | `GET /files/{id}` | `ScaniiProcessingResult` |
-| `retrieveTrace($id)` | `GET /files/{id}/trace` | `?ScaniiTraceResult` (v2.2 preview) |
+| `retrieveTrace($id)` | `GET /files/{id}/trace` | `?ScaniiTraceResult` |
 | `delete($id)` | `DELETE /files/{id}` | `bool` |
 | `deleteTrace($id)` | `DELETE /files/{id}/trace` | `bool` |
 | `ping()` | `GET /ping` | `bool` |

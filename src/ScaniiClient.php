@@ -304,9 +304,6 @@ final class ScaniiClient
      *
      * Returns null when no trace exists for the given id (HTTP 404).
      *
-     * This is a v2.2 preview surface; the API shape may shift before it is
-     * marked stable.
-     *
      * @see https://scanii.github.io/openapi/v22/ — GET /files/{id}/trace
      */
     public function retrieveTrace(string $id): ?ScaniiTraceResult
@@ -392,9 +389,6 @@ final class ScaniiClient
      * field to POST /files; the Scanii server fetches and scans it
      * synchronously. This is distinct from fetch(), which submits to
      * POST /files/fetch for asynchronous server-side fetching.
-     *
-     * This is a v2.2 preview surface; the API shape may shift before it is
-     * marked stable.
      *
      * @param array<string, string>|null $metadata
      *
