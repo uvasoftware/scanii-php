@@ -26,7 +26,7 @@ use Scanii\Models\ScaniiTraceResult;
  */
 final class ScaniiClient
 {
-    public const string VERSION = '6.3.1';
+    public const string VERSION = '6.4.0';
 
     private const string API_VERSION_PATH = '/v2.2';
     private const string DEFAULT_USER_AGENT_PREFIX = 'scanii-php/v';
@@ -326,6 +326,63 @@ final class ScaniiClient
         }
 
         return $this->buildTraceResult($status, $body, $headers);
+    }
+
+    /**
+     * Delete a previously processed file result.
+     *
+     * The processing trace is a separate resource and is NOT removed by this
+     * call — it stays readable via retrieveTrace() until you delete it with
+     * deleteTrace(). To erase a scan entirely, call both.
+     *
+     * Throws ScaniiException on 404 (no result for that id), which is also what
+     * a repeated delete of the same id returns.
+     *
+     * @return bool true when the resource was deleted; never false — any other
+     *              status throws.
+     *
+     * @see https://scanii.github.io/openapi/v22/ — DELETE /files/{id}
+     */
+    public function delete(string $id): bool
+    {
+        if ($id === '') {
+            throw new InvalidArgumentException('id must not be empty');
+        }
+
+        [$status, $body, $headers] = $this->request('DELETE', '/files/' . rawurlencode($id));
+
+        if ($status !== 204) {
+            $this->throwForStatus($status, $body, $headers);
+        }
+
+        return true;
+    }
+
+    /**
+     * Delete the processing trace for a previously processed file, leaving the
+     * processing result itself untouched.
+     *
+     * Throws ScaniiException on 404 (no trace for that id), which is also what
+     * a repeated delete of the same id returns.
+     *
+     * @return bool true when the trace was deleted; never false — any other
+     *              status throws.
+     *
+     * @see https://scanii.github.io/openapi/v22/ — DELETE /files/{id}/trace
+     */
+    public function deleteTrace(string $id): bool
+    {
+        if ($id === '') {
+            throw new InvalidArgumentException('id must not be empty');
+        }
+
+        [$status, $body, $headers] = $this->request('DELETE', '/files/' . rawurlencode($id) . '/trace');
+
+        if ($status !== 204) {
+            $this->throwForStatus($status, $body, $headers);
+        }
+
+        return true;
     }
 
     /**

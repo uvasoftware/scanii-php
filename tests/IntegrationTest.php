@@ -293,6 +293,65 @@ final class IntegrationTest extends TestCase
         $client->deleteAuthToken($tok->resourceId);
     }
 
+    // -- delete / deleteTrace ------------------------------------------------
+
+    #[Test]
+    public function delete_removes_result_and_trace_is_still_available(): void
+    {
+        $path = $this->tempFile(self::LOCAL_MALWARE_UUID);
+        try {
+            $client = $this->client();
+            $result = $client->process($path);
+
+            $this->assertTrue($client->delete($result->resourceId));
+
+            // Processing result must be gone.
+            try {
+                $client->retrieve($result->resourceId);
+                $this->fail('retrieve after delete should have thrown ScaniiException');
+            } catch (\Scanii\ScaniiException $e) {
+                $this->assertSame(404, $e->statusCode);
+            }
+
+            // Trace must still be readable.
+            $trace = $client->retrieveTrace($result->resourceId);
+            $this->assertNotNull($trace, 'trace should remain after result is deleted');
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    #[Test]
+    public function delete_trace_removes_trace_independently(): void
+    {
+        $path = $this->tempFile(self::LOCAL_MALWARE_UUID);
+        try {
+            $client = $this->client();
+            $result = $client->process($path);
+
+            $this->assertTrue($client->deleteTrace($result->resourceId));
+
+            $trace = $client->retrieveTrace($result->resourceId);
+            $this->assertNull($trace, 'trace should be null after deleteTrace');
+        } finally {
+            @unlink($path);
+        }
+    }
+
+    #[Test]
+    public function delete_unknown_id_throws(): void
+    {
+        $this->expectException(\Scanii\ScaniiException::class);
+        $this->client()->delete('does-not-exist-delete-php');
+    }
+
+    #[Test]
+    public function delete_trace_unknown_id_throws(): void
+    {
+        $this->expectException(\Scanii\ScaniiException::class);
+        $this->client()->deleteTrace('does-not-exist-delete-trace-php');
+    }
+
     #[Test]
     public function callback_delivery(): void
     {

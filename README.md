@@ -60,11 +60,17 @@ fclose($stream);
 | `fetch($location, $metadata, $callback)` | `POST /files/fetch` | `ScaniiPendingResult` |
 | `retrieve($id)` | `GET /files/{id}` | `ScaniiProcessingResult` |
 | `retrieveTrace($id)` | `GET /files/{id}/trace` | `?ScaniiTraceResult` (v2.2 preview) |
+| `delete($id)` | `DELETE /files/{id}` | `bool` |
+| `deleteTrace($id)` | `DELETE /files/{id}/trace` | `bool` |
 | `ping()` | `GET /ping` | `bool` |
 | `createAuthToken($timeoutSeconds)` | `POST /auth/tokens` | `ScaniiAuthToken` |
 | `retrieveAuthToken($id)` | `GET /auth/tokens/{id}` | `ScaniiAuthToken` |
 | `deleteAuthToken($id)` | `DELETE /auth/tokens/{id}` | `void` |
 | `retrieveAccountInfo()` | `GET /account.json` | `ScaniiAccountInfo` |
+
+`delete()` and `deleteTrace()` are independent: deleting a processing result leaves its
+trace readable, and deleting a trace leaves the result readable. To erase a scan
+entirely, call both.
 
 Full API reference: <https://scanii.github.io/openapi/v22/>.
 
