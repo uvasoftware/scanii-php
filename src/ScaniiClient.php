@@ -338,9 +338,12 @@ final class ScaniiClient
      * Throws ScaniiException on 404 (no result for that id), which is also what
      * a repeated delete of the same id returns.
      *
+     * @return bool true when the resource was deleted; never false — any other
+     *              status throws.
+     *
      * @see https://scanii.github.io/openapi/v22/ — DELETE /files/{id}
      */
-    public function delete(string $id): void
+    public function delete(string $id): bool
     {
         if ($id === '') {
             throw new InvalidArgumentException('id must not be empty');
@@ -351,6 +354,8 @@ final class ScaniiClient
         if ($status !== 204) {
             $this->throwForStatus($status, $body, $headers);
         }
+
+        return true;
     }
 
     /**
@@ -360,9 +365,12 @@ final class ScaniiClient
      * Throws ScaniiException on 404 (no trace for that id), which is also what
      * a repeated delete of the same id returns.
      *
+     * @return bool true when the trace was deleted; never false — any other
+     *              status throws.
+     *
      * @see https://scanii.github.io/openapi/v22/ — DELETE /files/{id}/trace
      */
-    public function deleteTrace(string $id): void
+    public function deleteTrace(string $id): bool
     {
         if ($id === '') {
             throw new InvalidArgumentException('id must not be empty');
@@ -373,6 +381,8 @@ final class ScaniiClient
         if ($status !== 204) {
             $this->throwForStatus($status, $body, $headers);
         }
+
+        return true;
     }
 
     /**

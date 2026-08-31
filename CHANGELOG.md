@@ -4,8 +4,8 @@
 
 ### Added
 
-- `ScaniiClient::delete(string $id): void` — deletes a previously processed file result (`DELETE /files/{id}`). The trace is left intact.
-- `ScaniiClient::deleteTrace(string $id): void` — deletes the processing trace for a previously processed file (`DELETE /files/{id}/trace`).
+- `ScaniiClient::delete(string $id): bool` — deletes a previously processed file result (`DELETE /files/{id}`). The trace is left intact.
+- `ScaniiClient::deleteTrace(string $id): bool` — deletes the processing trace for a previously processed file (`DELETE /files/{id}/trace`).
 - `ScaniiClient::VERSION` bumped to `6.4.0`.
 
 ## [6.3.1] — dependency refresh

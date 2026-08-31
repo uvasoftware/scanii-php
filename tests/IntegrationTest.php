@@ -303,7 +303,7 @@ final class IntegrationTest extends TestCase
             $client = $this->client();
             $result = $client->process($path);
 
-            $client->delete($result->resourceId);
+            $this->assertTrue($client->delete($result->resourceId));
 
             // Processing result must be gone.
             try {
@@ -329,7 +329,7 @@ final class IntegrationTest extends TestCase
             $client = $this->client();
             $result = $client->process($path);
 
-            $client->deleteTrace($result->resourceId);
+            $this->assertTrue($client->deleteTrace($result->resourceId));
 
             $trace = $client->retrieveTrace($result->resourceId);
             $this->assertNull($trace, 'trace should be null after deleteTrace');
