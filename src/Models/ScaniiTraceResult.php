@@ -7,9 +7,6 @@ namespace Scanii\Models;
 /**
  * Result of ScaniiClient::retrieveTrace — ordered processing events for a scan.
  *
- * This is a v2.2 preview surface; the API shape may shift before it is marked
- * stable.
- *
  * @see https://scanii.github.io/openapi/v22/ — GET /files/{id}/trace
  */
 final class ScaniiTraceResult extends ScaniiResult

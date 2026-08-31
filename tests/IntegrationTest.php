@@ -217,7 +217,7 @@ final class IntegrationTest extends TestCase
         $this->client()->processStream('not-a-stream', 'file.bin');
     }
 
-    // -- retrieveTrace (v2.2 preview) ----------------------------------------
+    // -- retrieveTrace -------------------------------------------------------
 
     #[Test]
     public function retrieve_trace_returns_non_empty_events_for_known_id(): void
@@ -245,7 +245,7 @@ final class IntegrationTest extends TestCase
         $this->assertNull($result);
     }
 
-    // -- processFromUrl (v2.2 preview) ---------------------------------------
+    // -- processFromUrl ------------------------------------------------------
 
     #[Test]
     public function process_from_url_returns_result_with_eicar_finding(): void
